@@ -5,12 +5,14 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function ArchiveList() {
   const [archives, setArchives] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/archives')
+    fetch(`${API_BASE_URL}/archives`)
       .then(res => res.json())
       .then(data => {
         setArchives(data);
@@ -20,13 +22,13 @@ export default function ArchiveList() {
 
   async function handleDelete(id) {
     if (!window.confirm('Eintrag wirklich löschen?')) return;
-    await fetch(`http://localhost:5000/api/archives/${id}`, { method: 'DELETE' });
+    await fetch(`${API_BASE_URL}/archives/${id}`, { method: 'DELETE' });
     setArchives(archives => archives.filter(a => a._id !== id));
   }
 
   async function handleDeleteAll() {
     if (!window.confirm('Alle Einträge wirklich löschen?')) return;
-    await fetch('http://localhost:5000/api/archives', { method: 'DELETE' });
+    await fetch(`${API_BASE_URL}/archives`, { method: 'DELETE' });
     setArchives([]);
   }
 

@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import { Button } from './ui/button';
 import { Toaster, toast } from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function EditRecipeModal({ open, onClose, recipe, onSave }) {
   const [form, setForm] = useState({
     title: recipe.title || '',
@@ -52,7 +54,7 @@ function EditRecipeModal({ open, onClose, recipe, onSave }) {
       });
     }
     try {
-      const res = await fetch(`http://localhost:5000/api/recipes/${recipe._id}`, {
+      const res = await fetch(`${API_BASE_URL}/recipes/${recipe._id}`, {
         method: 'PUT',
         headers: isMultipart ? undefined : { 'Content-Type': 'application/json' },
         body: data,
@@ -122,7 +124,7 @@ export default function RecipeDetailView({ id }) {
   const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/recipes/${id}`)
+    fetch(`${API_BASE_URL}/recipes/${id}`)
       .then(res => res.json())
       .then(setRecipe);
   }, [id]);
@@ -143,7 +145,7 @@ export default function RecipeDetailView({ id }) {
       notes: comment,
     };
     try {
-      const res = await fetch('http://localhost:5000/api/archives', {
+      const res = await fetch(`${API_BASE_URL}/archives`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(archiveData),

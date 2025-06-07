@@ -6,6 +6,8 @@ import { Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 // import { Button } from '@/components/ui/button';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Search() {
   const [recipes, setRecipes] = useState([]);
   const [query, setQuery] = useState('');
@@ -13,7 +15,7 @@ export default function Search() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/recipes')
+    fetch(`${API_BASE_URL}/recipes`)
       .then(res => res.json())
       .then(data => {
         setAllRecipes(data);
