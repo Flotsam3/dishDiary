@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import AddRecipe from './pages/AddRecipe';
@@ -32,6 +33,7 @@ function Nav() {
 function App() {
   return (
     <Router>
+      <Toaster position="top-center" />
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />

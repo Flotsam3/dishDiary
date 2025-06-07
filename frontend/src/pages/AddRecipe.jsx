@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
+import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -38,7 +39,7 @@ export default function AddRecipe() {
         body: data,
       });
       if (!res.ok) throw new Error("Failed to add recipe");
-      alert("Recipe submitted!");
+      toast.success("Rezept erfolgreich hinzugefügt!");
       setForm({
         title: "",
         image: null,
@@ -47,7 +48,7 @@ export default function AddRecipe() {
         instructions: ""
       });
     } catch (err) {
-      alert("Error: " + err.message);
+      toast.error("Fehler: " + err.message);
     } finally {
       setLoading(false);
     }

@@ -4,7 +4,7 @@ import { Card } from './ui/card';
 import { Timer, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from './ui/button';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -162,7 +162,6 @@ export default function RecipeDetailView({ id }) {
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
-      <Toaster position="top-center" />
       <EditRecipeModal open={isEditing} onClose={() => setIsEditing(false)} recipe={recipe} onSave={handleSave} />
       <Card className="w-full max-w-3xl p-6 shadow-lg flex flex-col mt-12">
         <h2 className="text-3xl font-bold text-center py-1 mb-6 bg-amber-500 text-white rounded-sm">{recipe.title}</h2>
