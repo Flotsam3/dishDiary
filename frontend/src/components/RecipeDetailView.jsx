@@ -1,7 +1,7 @@
 // RecipeDetailView component for showing recipe details (skeleton)
 import { useEffect, useState } from 'react';
 import { Card } from './ui/card';
-import { Timer, Star } from 'lucide-react';
+import { Timer, Star, Utensils } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from './ui/button';
 import { toast } from 'react-hot-toast';
@@ -122,11 +122,22 @@ export default function RecipeDetailView({ id }) {
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [archiveDates, setArchiveDates] = useState([]);
+  const [archivePopupOpen, setArchivePopupOpen] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/recipes/${id}`)
       .then(res => res.json())
       .then(setRecipe);
+    // Fetch archive entries for this recipe
+    fetch(`${API_BASE_URL}/archives`)
+      .then(res => res.json())
+      .then(data => {
+        // Filter for this recipe and sort by cookedAt descending
+        const filtered = (data || []).filter(a => a.recipeId === id);
+        const sorted = filtered.sort((a, b) => new Date(b.cookedAt) - new Date(a.cookedAt));
+        setArchiveDates(sorted.map(entry => entry.cookedAt));
+      });
   }, [id]);
 
   function handleSave(updated) {
@@ -175,7 +186,7 @@ export default function RecipeDetailView({ id }) {
               onClick={() => setImageModalOpen(true)}
             />
             {/* Stars and preparation info moved here */}
-            <div className="flex flex-col items-center mt-4">
+            <div className="flex flex-col items-center mt-4 relative">
               <div className="flex items-center gap-2 justify-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -188,6 +199,49 @@ export default function RecipeDetailView({ id }) {
                 ))}
                 <Timer className="w-5 h-5 ml-2 text-gray-600" />
                 <span className="ml-1 text-gray-600">{recipe.duration} Min</span>
+              </div>
+              {/* Utensils icon and count centered below */}
+              <div className="flex flex-col items-center mt-2">
+                <button
+                  className="flex items-center gap-1 text-gray-700 hover:text-blue-600 focus:outline-none"
+                  onClick={() => setArchivePopupOpen(true)}
+                  type="button"
+                  title="Zubereitungshistorie anzeigen"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  <Utensils className="w-5 h-5" />
+                  <span className="font-semibold">{archiveDates.length}</span>
+                </button>
+                {/* Archive popup */}
+                {archivePopupOpen && (
+                  <div
+                    className="absolute z-50 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[220px] max-w-xs"
+                    style={{ left: '50%', transform: 'translateX(-50%)', top: '3.5rem' }}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-gray-700">Zubereitet am:</span>
+                      <button
+                        className="text-gray-400 hover:text-red-500 text-lg font-bold"
+                        onClick={() => setArchivePopupOpen(false)}
+                        aria-label="Schließen"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    {archiveDates.length === 0 ? (
+                      <div className="text-gray-500 text-sm">Noch nie zubereitet</div>
+                    ) : (
+                      <ul className="max-h-40 overflow-y-auto text-sm">
+                        {archiveDates.map((d, i) => (
+                          <li key={i} className="py-1 border-b last:border-b-0">
+                            {format(new Date(d), 'dd.MM.yyyy')}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

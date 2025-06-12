@@ -12,6 +12,7 @@ export default function Search() {
   const [recipes, setRecipes] = useState([]);
   const [query, setQuery] = useState('');
   const [allRecipes, setAllRecipes] = useState([]);
+  const [sortBy, setSortBy] = useState('alphabetical');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,15 +48,42 @@ export default function Search() {
     setRecipes(allRecipes);
   };
 
+  // Sorting logic
+  const sortedRecipes = [...recipes].sort((a, b) => {
+    if (sortBy === 'alphabetical') {
+      return a.title.localeCompare(b.title, 'de');
+    } else if (sortBy === 'frequency') {
+      return (b.cooked?.length || 0) - (a.cooked?.length || 0);
+    } else if (sortBy === 'lastCooked') {
+      const lastA = a.cooked?.length ? new Date(a.cooked[a.cooked.length - 1]) : new Date(0);
+      const lastB = b.cooked?.length ? new Date(b.cooked[b.cooked.length - 1]) : new Date(0);
+      return lastB - lastA;
+    }
+    return 0;
+  });
+
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
-      <SearchBar
-        query={query}
-        setQuery={setQuery}
-        onSearch={handleSearch}
-      />
+      <div className="flex flex-row gap-2 mb-4 items-stretch">
+        <div className="flex-1 w-full">
+          <SearchBar
+            query={query}
+            setQuery={setQuery}
+            onSearch={handleSearch}
+          />
+        </div>
+        <select
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value)}
+          className="border rounded min-w-[180px] h-11 px-3 text-base focus:outline-amber-500"
+        >
+          <option value="alphabetical">Alphabetisch (A-Z)</option>
+          <option value="frequency">Häufigkeit (meist gekocht)</option>
+          <option value="lastCooked">Zuletzt gekocht</option>
+        </select>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {recipes.map(recipe => {
+        {sortedRecipes.map(recipe => {
           const cookedArr = recipe.cooked || [];
           const lastCooked = cookedArr.length > 0
             ? new Date(cookedArr[cookedArr.length - 1]).toLocaleDateString()
