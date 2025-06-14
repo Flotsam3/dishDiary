@@ -101,12 +101,32 @@ function EditRecipeModal({ open, onClose, recipe, onSave }) {
             <textarea name="instructions" className="block w-full border rounded p-2 mt-1" value={form.instructions} onChange={handleChange} required rows={5} />
           </label>
           <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200 text-[14px]"
             type="submit"
             disabled={saving}
           >
             {saving ? 'Wird gespeichert...' : 'Änderungen Speichern'}
           </Button>
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200 mt-2 text-[14px]"
+            type="button"
+            onClick={async () => {
+              if (window.confirm('Möchtest du dieses Rezept wirklich löschen?')) {
+                try {
+                  const res = await fetch(`${API_BASE_URL}/recipes/${recipe._id}`, {
+                    method: 'DELETE',
+                  });
+                  if (!res.ok) throw new Error('Löschen fehlgeschlagen');
+                  toast.success('Rezept gelöscht!');
+                  window.location.href = '/search';
+                } catch (err) {
+                  toast.error('Fehler: ' + err.message);
+                }
+              }
+            }}
+          >
+            Rezept Löschen
+          </button>
         </form>
       </div>
     </div>
