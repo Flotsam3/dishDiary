@@ -11,6 +11,7 @@ import RecipeIngredientsList from './RecipeIngredientsList';
 import RecipeInstructions from './RecipeInstructions';
 import PreparationHistoryPopup from './PreparationHistoryPopup';
 import PortionSelector from './PortionSelector';
+import RecipePrintView from './RecipePrintView';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -111,13 +112,20 @@ export default function RecipeDetailView({ id }) {
           <h3 className="text-lg font-semibold mb-2">Anleitung</h3>
           <RecipeInstructions instructions={recipe.instructions} />
         </div>
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-6 gap-4">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
             onClick={() => setIsEditing(true)}
             type="button"
           >
             Editieren
+          </button>
+          <button
+            className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
+            onClick={() => window.print()}
+            type="button"
+          >
+            Drucken
           </button>
         </div>
       </Card>
@@ -181,6 +189,42 @@ export default function RecipeDetailView({ id }) {
           </div>
         </div>
       )}
+      {/* Print area: hidden except for print, minimal layout */}
+      <RecipePrintView recipe={recipe} portion={portion} />
+      <style>{`
+        @media print {
+          body * { visibility: hidden !important; }
+          #print-area, #print-area * { visibility: visible !important; }
+          #print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            background: white !important;
+            color: black !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .print\:block { display: block !important; }
+          .print\:mb-2 { margin-bottom: 0.5rem !important; }
+          .print\:mb-1 { margin-bottom: 0.25rem !important; }
+          .print\:text-center { text-align: center !important; }
+          .print\:p-0 { padding: 0 !important; }
+          .print\:m-0 { margin: 0 !important; }
+          .print\:w-full { width: 100% !important; }
+          .print\:max-w-full { max-width: 100% !important; }
+          .print\:shadow-none { box-shadow: none !important; }
+          .print\:rounded-none { border-radius: 0 !important; }
+          .print\:columns-2 { columns: 2 !important; -webkit-columns: 2 !important; -moz-columns: 2 !important; }
+          .print\:gap-8 { column-gap: 2rem !important; }
+        }
+        @page {
+          margin: 0.75cm 1.5cm 1.5cm 1.5cm;
+        }
+      `}</style>
     </div>
   );
 }
