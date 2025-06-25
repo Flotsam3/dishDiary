@@ -8,6 +8,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
   const [form, setForm] = useState({
     title: recipe.title || '',
     duration: recipe.duration || '',
+    portion: recipe.portion || 1,
     ingredients: (recipe.ingredients || []).join('\n'),
     instructions: Array.isArray(recipe.instructions) ? recipe.instructions.join('\n') : recipe.instructions || '',
     image: null,
@@ -34,6 +35,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
       data = new FormData();
       data.append('title', form.title);
       data.append('duration', form.duration);
+      data.append('portion', form.portion);
       data.append('ingredients', form.ingredients);
       data.append('instructions', form.instructions);
       data.append('image', form.image);
@@ -42,6 +44,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
       data = JSON.stringify({
         title: form.title,
         duration: form.duration,
+        portion: form.portion,
         ingredients: form.ingredients.split('\n').map(i => i.trim()).filter(Boolean),
         instructions: form.instructions.split('\n').map(i => i.trim()).filter(Boolean),
       });
@@ -99,9 +102,14 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
             <input type="file" name="image" accept="image/*" className="block w-full mt-1" onChange={handleChange} />
             <img src={preview} alt="Preview" className="mt-2 rounded h-32 object-cover" />
           </label>
-          <label className="font-semibold">Zubereitungszeit (Minuten)
-            <input name="duration" type="number" min="1" className="block w-full border rounded p-2 mt-1" value={form.duration} onChange={handleChange} required />
-          </label>
+          <div className="flex gap-4">
+            <label className="font-semibold flex-1">Zubereitungszeit (Minuten)
+              <input name="duration" type="number" min="1" className="block w-full border rounded p-2 mt-1" value={form.duration} onChange={handleChange} required />
+            </label>
+            <label className="font-semibold flex-1">Portionen
+              <input name="portion" type="number" min="1" className="block w-full border rounded p-2 mt-1" value={form.portion} onChange={handleChange} required />
+            </label>
+          </div>
           <label className="font-semibold">Zutaten
             <textarea name="ingredients" className="block w-full border rounded p-2 mt-1" value={form.ingredients} onChange={handleChange} required rows={4} />
           </label>

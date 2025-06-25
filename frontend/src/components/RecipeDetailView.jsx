@@ -1,7 +1,7 @@
 // RecipeDetailView component for showing recipe details (skeleton)
 import { useEffect, useState } from 'react';
 import { Card } from './ui/card';
-import { Timer, Star } from 'lucide-react';
+import { Timer, Star, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from './ui/button';
 import { toast } from 'react-hot-toast';
@@ -12,6 +12,7 @@ import RecipeInstructions from './RecipeInstructions';
 import PreparationHistoryPopup from './PreparationHistoryPopup';
 import PortionSelector from './PortionSelector';
 import RecipePrintView from './RecipePrintView';
+import DescriptionModal from './DescriptionModal';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -20,17 +21,24 @@ export default function RecipeDetailView({ id }) {
   const [date, setDate] = useState(new Date());
   const [isEditing, setIsEditing] = useState(false);
   const [rating, setRating] = useState(0);
-  const [portion, setPortion] = useState(1);
+  const [portion, setPortion] = useState(recipe?.portion || 1);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [archiveDates, setArchiveDates] = useState([]);
   const [archivePopupOpen, setArchivePopupOpen] = useState(false);
+  const [descModalOpen, setDescModalOpen] = useState(false);
+  const [descEditMode, setDescEditMode] = useState(false);
+  const [descValue, setDescValue] = useState("");
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/recipes/${id}`)
       .then(res => res.json())
-      .then(setRecipe);
+      .then(data => {
+        setRecipe(data);
+        setPortion(data.portion || 1);
+        setDescValue(data.description || "");
+      });
     // Fetch archive entries for this recipe
     fetch(`${API_BASE_URL}/archives`)
       .then(res => res.json())
@@ -95,6 +103,7 @@ export default function RecipeDetailView({ id }) {
                 ))}
                 <Timer className="w-5 h-5 ml-2 text-gray-600" />
                 <span className="ml-1 text-gray-600">{recipe.duration} Min</span>
+                <Info className="w-5 h-5 ml-2 text-gray-600 cursor-pointer" onClick={() => setDescModalOpen(true)} />
               </div>
               {/* Preparation history popup */}
               <PreparationHistoryPopup archiveDates={archiveDates} open={archivePopupOpen} setOpen={setArchivePopupOpen} />
@@ -189,6 +198,30 @@ export default function RecipeDetailView({ id }) {
           </div>
         </div>
       )}
+      <DescriptionModal
+        open={descModalOpen}
+        editMode={descEditMode}
+        value={descValue}
+        setValue={setDescValue}
+        onClose={() => { setDescModalOpen(false); setDescEditMode(false); }}
+        onEditToggle={() => setDescEditMode(e => !e)}
+        onSave={async () => {
+          try {
+            const res = await fetch(`${API_BASE_URL}/recipes/${recipe._id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ description: descValue }),
+            });
+            if (!res.ok) throw new Error('Fehler beim Speichern');
+            const updated = await res.json();
+            setRecipe(updated);
+            setDescEditMode(false);
+            toast.success('Beschreibung gespeichert!');
+          } catch (err) {
+            toast.error('Fehler: ' + err.message);
+          }
+        }}
+      />
       {/* Print area: hidden except for print, minimal layout */}
       <RecipePrintView recipe={recipe} portion={portion} />
       <style>{`

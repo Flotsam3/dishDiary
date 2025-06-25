@@ -9,6 +9,7 @@ export default function AddRecipe() {
     title: "",
     image: null,
     duration: "",
+    portion: 1,
     ingredients: "",
     instructions: ""
   });
@@ -29,6 +30,7 @@ export default function AddRecipe() {
     const data = new FormData();
     data.append("title", form.title);
     data.append("duration", form.duration);
+    data.append("portion", form.portion);
     data.append("ingredients", form.ingredients);
     data.append("instructions", form.instructions);
     if (form.image) data.append("image", form.image);
@@ -44,6 +46,7 @@ export default function AddRecipe() {
         title: "",
         image: null,
         duration: "",
+        portion: 1,
         ingredients: "",
         instructions: ""
       });
@@ -78,18 +81,32 @@ export default function AddRecipe() {
               onChange={handleChange}
             />
           </label>
-          <label className="text-left font-semibold">Zubereitungszeit (Minuten)
-            <input
-              name="duration"
-              type="number"
-              min="1"
-              className="block w-full border rounded p-2 mt-1"
-              placeholder="z.B. 30"
-              value={form.duration}
-              onChange={handleChange}
-              required
-            />
-          </label>
+          <div className="flex gap-4">
+            <label className="text-left font-semibold flex-1">Zubereitungszeit (Minuten)
+              <input
+                name="duration"
+                type="number"
+                min="1"
+                className="block w-full border rounded p-2 mt-1"
+                placeholder="z.B. 30"
+                value={form.duration}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <label className="text-left font-semibold flex-1">Portionen
+              <input
+                name="portion"
+                type="number"
+                min="1"
+                className="block w-full border rounded p-2 mt-1"
+                placeholder="z.B. 4"
+                value={form.portion}
+                onChange={handleChange}
+                required
+              />
+            </label>
+          </div>
           <label className="text-left font-semibold">Zutaten
             <textarea
               name="ingredients"

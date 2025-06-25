@@ -25,7 +25,7 @@ export const getRecipeById = async (req, res) => {
 // Create a new recipe
 export const createRecipe = async (req, res) => {
   try {
-    const { title, duration, ingredients, instructions } = req.body;
+    const { title, duration, ingredients, instructions, portion, description } = req.body;
     // Use default image if none provided
     const imageUrl = req.file ? req.file.path : "/default-recipe.jpg"; // Cloudinary URL from Multer or default
 
@@ -45,6 +45,8 @@ export const createRecipe = async (req, res) => {
       instructions: instructionsArr,
       duration,
       imageUrl,
+      portion: portion || 1,
+      description: description || '',
     });
 
     console.log({recipe});
@@ -97,6 +99,12 @@ export const updateRecipe = async (req, res) => {
       updateFields.instructions = Array.isArray(req.body.instructions)
         ? req.body.instructions
         : req.body.instructions.split('\n').map(i => i.trim()).filter(Boolean);
+    }
+    if (req.body.portion) {
+      updateFields.portion = req.body.portion;
+    }
+    if (typeof req.body.description !== 'undefined') {
+      updateFields.description = req.body.description;
     }
 
     const updated = await Recipe.findByIdAndUpdate(req.params.id, updateFields, { new: true });
