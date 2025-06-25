@@ -64,6 +64,9 @@ export default function Search() {
 
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
+      <div className="text-center text-lg font-medium mb-4 ">
+        Es sind {allRecipes.length} Rezepte in der Datenbank
+      </div>
       <div className="flex flex-row gap-2 mb-4 items-stretch">
         <div className="flex-1 w-full">
           <SearchBar
@@ -75,7 +78,7 @@ export default function Search() {
         <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value)}
-          className="border rounded min-w-[180px] h-11 px-3 text-base focus:outline-amber-500"
+          className="border rounded min-w-[180px] h-12 px-3 text-base focus:outline-amber-500"
         >
           <option value="alphabetical">Alphabetisch (A-Z)</option>
           <option value="frequency">Häufigkeit (meist gekocht)</option>
