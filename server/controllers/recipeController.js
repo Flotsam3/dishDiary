@@ -100,8 +100,8 @@ export const updateRecipe = async (req, res) => {
         ? req.body.instructions
         : req.body.instructions.split('\n').map(i => i.trim()).filter(Boolean);
     }
-    if (req.body.portion) {
-      updateFields.portion = req.body.portion;
+    if (typeof req.body.portion !== 'undefined') {
+      updateFields.portion = Number(req.body.portion);
     }
     if (typeof req.body.description !== 'undefined') {
       updateFields.description = req.body.description;
