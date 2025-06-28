@@ -4,7 +4,7 @@ import Recipe from '../models/Recipe.js';
 // Get all archived recipes
 export const getAllArchives = async (req, res) => {
   try {
-    const archives = await Archive.find();
+    const archives = await Archive.find().sort({ cookedAt: -1 });
     res.json(archives);
   } catch (err) {
     res.status(500).json({ error: err.message });
