@@ -68,10 +68,10 @@ export default function Datenbank() {
 
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
-      <div className="text-center text-lg font-medium mb-4 ">
+      <div className="text-center text-base sm:text-lg font-medium mb-4">
         Es sind {allRecipes.length} öffentliche Rezepte in der Datenbank
       </div>
-      <div className="flex flex-row gap-2 mb-4 items-stretch">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch">
         <div className="flex-1 w-full">
           <SearchBar
             query={query}
@@ -79,7 +79,7 @@ export default function Datenbank() {
             onSearch={handleSearch}
           />
         </div>
-        <select
+        {/* <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value)}
           className="border rounded min-w-[180px] h-12 px-3 text-base focus:outline-amber-500"
@@ -87,7 +87,7 @@ export default function Datenbank() {
           <option value="alphabetical">Alphabetisch (A-Z)</option>
           <option value="frequency">Häufigkeit (meist gekocht)</option>
           <option value="lastCooked">Zuletzt gekocht</option>
-        </select>
+        </select> */}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {sortedRecipes.map(recipe => {
@@ -101,10 +101,10 @@ export default function Datenbank() {
               className="flex flex-col items-center p-4 cursor-pointer hover:outline-amber-500 hover:outline-4 transition duration-200"
               onClick={() => navigate(`/recipe/${recipe._id}`)}
             >
-              <div className="flex items-center mb-2">
+              {/* <div className="flex items-center mb-2">
                 <Utensils className="w-5 h-5 mr-2 text-gray-500" />
                 <span className="text-sm text-gray-600">{lastCooked}</span>
-              </div>
+              </div> */}
               <img
                 src={recipe.imageUrl || '/default-recipe.jpg'}
                 alt={recipe.title}

@@ -84,7 +84,7 @@ export default function AddRecipe() {
               onChange={handleChange}
             />
           </label>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <label className="text-left font-semibold flex-1">Zubereitungszeit (Minuten)
               <input
                 name="duration"

@@ -95,8 +95,8 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
 
    if (!open) return null;
    return (
-      <div className="fixed inset-0 z-5000 flex items-center justify-center bg-black/40">
-         <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl relative">
+      <div className="fixed inset-0 z-5000 flex items-start justify-center bg-black/40 overflow-y-auto py-4">
+         <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 w-full max-w-4xl relative mx-4 my-auto">
             <button
                className="absolute top-2 right-2  text-2xl font-bold bg-transparent border-none p-0 m-0  focus:outline-none cursor-pointer"
                onClick={onClose}

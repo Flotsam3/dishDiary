@@ -70,10 +70,10 @@ export default function Search() {
 
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
-      <div className="text-center text-lg font-medium mb-4 ">
+      <div className="text-center text-base sm:text-lg font-medium mb-4 ">
         Es sind {allRecipes.length} Rezepte in deiner Sammlung
       </div>
-      <div className="flex flex-row gap-2 mb-4 items-stretch">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch">
         <div className="flex-1 w-full">
           <SearchBar
             query={query}
@@ -91,7 +91,7 @@ export default function Search() {
           <option value="lastCooked">Zuletzt gekocht</option>
         </select>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {sortedRecipes.map(recipe => {
           const cookedArr = recipe.cooked || [];
           const lastCooked = cookedArr.length > 0
