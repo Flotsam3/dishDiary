@@ -84,10 +84,11 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
          try {
             const res = await fetch(`${API_BASE_URL}/recipes/${recipe._id}`, {
                method: "DELETE",
+               credentials: "include"
             });
             if (!res.ok) throw new Error("Löschen fehlgeschlagen");
             toast.success("Rezept gelöscht!");
-            window.location.href = "/search";
+            window.location.href = "/my-recipes";
          } catch (err) {
             toast.error("Fehler: " + err.message);
          }

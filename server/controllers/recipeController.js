@@ -157,7 +157,7 @@ export const deleteRecipe = async (req, res) => {
     if (!req.user || !recipe.userId.equals(req.user._id)) {
       return res.status(403).json({ error: 'Not authorized to delete this recipe' });
     }
-    await recipe.remove();
+    await recipe.deleteOne();
     res.json({ message: 'Recipe deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
