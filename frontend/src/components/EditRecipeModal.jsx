@@ -66,6 +66,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onSave }) {
          const res = await fetch(`${API_BASE_URL}/recipes/${recipe._id}`, {
             method: "PUT",
             headers: isMultipart ? undefined : { "Content-Type": "application/json" },
+            credentials: "include",
             body: data,
          });
          if (!res.ok) throw new Error("Failed to update recipe");
