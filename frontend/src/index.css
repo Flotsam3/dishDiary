@@ -7,6 +7,10 @@ button {
   @apply bg-blue-200 text-blue-900 font-semibold transition;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   padding: 0;

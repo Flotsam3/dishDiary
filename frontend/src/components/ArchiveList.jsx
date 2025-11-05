@@ -4,35 +4,81 @@ import { Button } from './ui/button';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function ArchiveList() {
   const [archives, setArchives] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/archives`)
-      .then(res => res.json())
-      .then(data => {
+    const fetchArchives = async () => {
+      try {
+        console.log('Fetching archives...');
+        const res = await fetch(`${API_BASE_URL}/archives`, {
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        console.log('Archive response status:', res.status);
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        console.log('Archives data:', data);
+        
         setArchives(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading archives:', err);
+        setError(err.message);
+        toast.error('Fehler beim Laden der Archive: ' + err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchArchives();
   }, []);
 
   async function handleDelete(id) {
     if (!window.confirm('Eintrag wirklich löschen?')) return;
-    await fetch(`${API_BASE_URL}/archives/${id}`, { method: 'DELETE' });
-    setArchives(archives => archives.filter(a => a._id !== id));
+    try {
+      const res = await fetch(`${API_BASE_URL}/archives/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('Löschen fehlgeschlagen');
+      setArchives(archives => archives.filter(a => a._id !== id));
+    } catch (err) {
+      console.error('Error deleting archive:', err);
+      toast.error('Fehler beim Löschen: ' + err.message);
+    }
   }
 
   async function handleDeleteAll() {
     if (!window.confirm('Alle Einträge wirklich löschen?')) return;
-    await fetch(`${API_BASE_URL}/archives`, { method: 'DELETE' });
-    setArchives([]);
+    try {
+      const res = await fetch(`${API_BASE_URL}/archives`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('Löschen fehlgeschlagen');
+      setArchives([]);
+    } catch (err) {
+      console.error('Error deleting all archives:', err);
+      toast.error('Fehler beim Löschen: ' + err.message);
+    }
   }
 
-  if (loading) return <div>Lade Archiv...</div>;
+  if (loading) return <div className="text-center mt-24">Lade Archiv...</div>;
+  if (error) return <div className="text-center mt-24 text-red-500">Fehler: {error}</div>;
 
   return (
     <div className="w-full flex flex-col items-center mt-10">

@@ -1,14 +1,13 @@
-// Search page for recipes
+// Datenbank page for browsing all public recipes
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import SearchBar from '../components/SearchBar';
 import { Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-// import { Button } from '@/components/ui/button';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export default function Search() {
+export default function Datenbank() {
   const [recipes, setRecipes] = useState([]);
   const [query, setQuery] = useState('');
   const [allRecipes, setAllRecipes] = useState([]);
@@ -16,8 +15,8 @@ export default function Search() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Use /recipes endpoint to get all user's recipes (both public and private)
-    fetch(`${API_BASE_URL}/recipes`, {
+    // Use /recipes/public endpoint to get only public recipes
+    fetch(`${API_BASE_URL}/recipes/public`, {
       credentials: 'include'
     })
       .then(res => res.json())
@@ -26,13 +25,12 @@ export default function Search() {
         setRecipes(data);
       })
       .catch(err => {
-        console.error('Error fetching recipes:', err);
+        console.error('Error fetching public recipes:', err);
       });
   }, []);
 
   // Filter recipes by title or ingredients
   const handleSearch = (searchTerm) => {
-    // Always expect a string, not an event
     const term = typeof searchTerm === 'string' ? searchTerm : '';
     setQuery(term);
     if (!term) {
@@ -71,7 +69,7 @@ export default function Search() {
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
       <div className="text-center text-lg font-medium mb-4 ">
-        Es sind {allRecipes.length} Rezepte in deiner Sammlung
+        Es sind {allRecipes.length} öffentliche Rezepte in der Datenbank
       </div>
       <div className="flex flex-row gap-2 mb-4 items-stretch">
         <div className="flex-1 w-full">

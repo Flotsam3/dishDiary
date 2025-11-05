@@ -40,13 +40,18 @@ export default function RecipeDetailView({ id }) {
         setDescValue(data.description || "");
       });
     // Fetch archive entries for this recipe
-    fetch(`${API_BASE_URL}/archives`)
+    fetch(`${API_BASE_URL}/archives`, {
+      credentials: 'include'
+    })
       .then(res => res.json())
       .then(data => {
         // Filter for this recipe and sort by cookedAt descending
         const filtered = (data || []).filter(a => a.recipeId === id);
         const sorted = filtered.sort((a, b) => new Date(b.cookedAt) - new Date(a.cookedAt));
         setArchiveDates(sorted.map(entry => entry.cookedAt));
+      })
+      .catch(err => {
+        console.error('Error fetching archives:', err);
       });
   }, [id]);
 
@@ -66,15 +71,38 @@ export default function RecipeDetailView({ id }) {
       notes: comment,
     };
     try {
+      console.log('Archiving recipe with data:', archiveData);
       const res = await fetch(`${API_BASE_URL}/archives`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(archiveData),
+        credentials: 'include'
       });
-      if (!res.ok) throw new Error('Archivieren fehlgeschlagen');
+      console.log('Archive response status:', res.status);
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Archivieren fehlgeschlagen');
+      }
+      
+      const savedArchive = await res.json();
+      console.log('Saved archive:', savedArchive);
+      
       toast.success('Rezept wurde archiviert!');
       setComment("");
+      
+      // Refresh archive dates
+      const archivesRes = await fetch(`${API_BASE_URL}/archives`, {
+        credentials: 'include'
+      });
+      if (archivesRes.ok) {
+        const archives = await archivesRes.json();
+        const filtered = archives.filter(a => a.recipeId === recipe._id);
+        const sorted = filtered.sort((a, b) => new Date(b.cookedAt) - new Date(a.cookedAt));
+        setArchiveDates(sorted.map(entry => entry.cookedAt));
+      }
     } catch (err) {
+      console.error('Error archiving recipe:', err);
       toast.error('Fehler: ' + err.message);
     }
   }
@@ -189,7 +217,10 @@ export default function RecipeDetailView({ id }) {
               </button>
               <button
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded cursor-pointer"
-                onClick={() => setCommentModalOpen(false)}
+                onClick={() => {
+                  handleArchive();
+                  setCommentModalOpen(false);
+                }}
                 type="button"
               >
                 Speichern

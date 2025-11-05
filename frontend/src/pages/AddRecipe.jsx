@@ -11,7 +11,8 @@ export default function AddRecipe() {
     duration: "",
     portion: 1,
     ingredients: "",
-    instructions: ""
+    instructions: "",
+    isPublic: true
   });
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +20,7 @@ export default function AddRecipe() {
     const { name, value, files } = e.target;
     setForm((f) => ({
       ...f,
-      [name]: files ? files[0] : value
+      [name]: files ? files[0] : (e.target.type === 'checkbox' ? e.target.checked : value)
     }));
   };
 
@@ -31,6 +32,7 @@ export default function AddRecipe() {
     data.append("title", form.title);
     data.append("duration", form.duration);
     data.append("portion", form.portion);
+  data.append("isPublic", form.isPublic);
     data.append("ingredients", form.ingredients);
     data.append("instructions", form.instructions);
     if (form.image) data.append("image", form.image);
@@ -38,6 +40,7 @@ export default function AddRecipe() {
     try {
       const res = await fetch(`${API_BASE_URL}/recipes`, {
         method: "POST",
+        credentials: 'include',
         body: data,
       });
       if (!res.ok) throw new Error("Failed to add recipe");
@@ -128,6 +131,15 @@ export default function AddRecipe() {
               required
               rows={5}
             />
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="isPublic"
+              checked={form.isPublic}
+              onChange={handleChange}
+            />
+            <span>Öffentlich (sichtbar für andere)</span>
           </label>
           <button
             type="submit"

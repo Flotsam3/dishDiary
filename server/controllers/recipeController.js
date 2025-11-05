@@ -1,10 +1,33 @@
 import Recipe from '../models/Recipe.js';
 import { v2 as cloudinary } from 'cloudinary';
 
-// Get all recipes
+// Helper to normalize boolean-like values
+const parseBoolean = (val) => {
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'string') return ['true', '1', 'on', 'yes'].includes(val.toLowerCase());
+  return Boolean(val);
+};
+
+// Get all recipes (returns user's recipes if authenticated, public recipes if not)
 export const getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find();
+    // If user is authenticated, return only their recipes (both public and private)
+    if (req.user) {
+      const recipes = await Recipe.find({ userId: req.user._id });
+      return res.json(recipes);
+    }
+    // For unauthenticated users, return public recipes
+    const recipes = await Recipe.find({ isPublic: true });
+    res.json(recipes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get only public recipes
+export const getPublicRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({ isPublic: true });
     res.json(recipes);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -25,7 +48,7 @@ export const getRecipeById = async (req, res) => {
 // Create a new recipe
 export const createRecipe = async (req, res) => {
   try {
-    const { title, duration, ingredients, instructions, portion, description } = req.body;
+    const { title, duration, ingredients, instructions, portion, description, isPublic } = req.body;
     // Use default image if none provided
     const imageUrl = req.file ? req.file.path : "/default-recipe.jpg"; // Cloudinary URL from Multer or default
 
@@ -39,6 +62,9 @@ export const createRecipe = async (req, res) => {
       ? instructions
       : instructions.split('\n').map(i => i.trim()).filter(Boolean);
 
+    // Require authenticated user to set userId
+    if (!req.user) return res.status(401).json({ error: 'Authentication required' });
+
     const recipe = new Recipe({
       title,
       ingredients: ingredientsArr,
@@ -47,6 +73,9 @@ export const createRecipe = async (req, res) => {
       imageUrl,
       portion: portion || 1,
       description: description || '',
+      userId: req.user._id,
+      author: req.user.name || req.user.email,
+      isPublic: typeof isPublic !== 'undefined' ? parseBoolean(isPublic) : true,
     });
 
     console.log({recipe});
@@ -63,7 +92,6 @@ export const updateRecipe = async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
-
     let imageUrl = recipe.imageUrl;
     // If a new image is uploaded, delete the old one from Cloudinary
     if (req.file) {
@@ -81,6 +109,11 @@ export const updateRecipe = async (req, res) => {
         }
       }
       imageUrl = req.file.path;
+    }
+
+    // Only owner may update
+    if (!req.user || !recipe.userId.equals(req.user._id)) {
+      return res.status(403).json({ error: 'Not authorized to edit this recipe' });
     }
 
     // Prepare update fields
@@ -106,7 +139,9 @@ export const updateRecipe = async (req, res) => {
     if (typeof req.body.description !== 'undefined') {
       updateFields.description = req.body.description;
     }
-
+    if (typeof req.body.isPublic !== 'undefined') {
+      updateFields.isPublic = parseBoolean(req.body.isPublic);
+    }
     const updated = await Recipe.findByIdAndUpdate(req.params.id, updateFields, { new: true });
     res.json(updated);
   } catch (err) {
@@ -117,8 +152,12 @@ export const updateRecipe = async (req, res) => {
 // Delete a recipe
 export const deleteRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findByIdAndDelete(req.params.id);
+    const recipe = await Recipe.findById(req.params.id);
     if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
+    if (!req.user || !recipe.userId.equals(req.user._id)) {
+      return res.status(403).json({ error: 'Not authorized to delete this recipe' });
+    }
+    await recipe.remove();
     res.json({ message: 'Recipe deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
