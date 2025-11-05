@@ -1,5 +1,5 @@
 // Auth.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, User, ArrowRight, ChefHat } from 'lucide-react';
@@ -14,7 +14,11 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const { user, login, register } = useAuth();
+
+  useEffect(()=>{
+    if (user) navigate("/my-recipes");
+  },[]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
