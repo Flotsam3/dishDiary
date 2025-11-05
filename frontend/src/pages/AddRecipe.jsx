@@ -114,7 +114,7 @@ export default function AddRecipe() {
             <textarea
               name="ingredients"
               className="block w-full border rounded p-2 mt-1"
-              placeholder="Zutaten auflisten, eine pro Zeile, Bindestrich verwenden, z.B. 100 g - Möhren"
+              placeholder="Zutaten auflisten, eine pro Zeile, Bindestrich verwenden, Angaben immer für eine Person, z.B. 100 g - Möhren"
               value={form.ingredients}
               onChange={handleChange}
               required
