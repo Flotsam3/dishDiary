@@ -13,10 +13,12 @@ import PreparationHistoryPopup from "./PreparationHistoryPopup";
 import PortionSelector from "./PortionSelector";
 import RecipePrintView from "./RecipePrintView";
 import DescriptionModal from "./DescriptionModal";
+import { useAuth } from "../contexts/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function RecipeDetailView({ id }) {
+   const { user } = useAuth();
    const [recipe, setRecipe] = useState(null);
    const [date, setDate] = useState(new Date());
    const [isEditing, setIsEditing] = useState(false);
@@ -166,13 +168,16 @@ export default function RecipeDetailView({ id }) {
                <RecipeInstructions instructions={recipe.instructions} />
             </div>
             <div className="flex justify-center mt-6 gap-4">
-               <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
-                  onClick={() => setIsEditing(true)}
-                  type="button"
-               >
-                  Editieren
-               </button>
+               {/* Conditionally render the Editieren button */}
+               {user && recipe.userId === user.id && (
+                  <button
+                     className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
+                     onClick={() => setIsEditing(true)}
+                     type="button"
+                  >
+                     Editieren
+                  </button>
+               )}
                <button
                   className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded shadow cursor-pointer transition-colors duration-200"
                   onClick={() => window.print()}
