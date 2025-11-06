@@ -69,7 +69,7 @@ export default function Search() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 px-4 py-8">
+    <div className="flex flex-col items-center max-w-7xl mx-auto mt-10 px-4 py-8">
       <div className="text-center text-base sm:text-lg font-medium mb-4 ">
         Es sind {allRecipes.length} Rezepte in deiner Sammlung
       </div>
@@ -100,7 +100,7 @@ export default function Search() {
           return (
             <Card
               key={recipe._id}
-              className="flex flex-col items-center p-4 cursor-pointer hover:outline-amber-500 hover:outline-4 transition duration-200"
+              className="flex flex-col items-center p-4 max-w-[300px] lg:max-w-none cursor-pointer hover:outline-amber-500 hover:outline-4 transition duration-200"
               onClick={() => navigate(`/recipe/${recipe._id}`)}
             >
               <div className="flex items-center mb-2">
