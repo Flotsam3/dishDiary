@@ -71,7 +71,7 @@ export default function Datenbank() {
       <div className="text-center text-base sm:text-lg font-medium mb-4">
         Es sind {allRecipes.length} öffentliche Rezepte in der Datenbank
       </div>
-      <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 w-full items-stretch">
         <div className="flex-1 w-full">
           <SearchBar
             query={query}
